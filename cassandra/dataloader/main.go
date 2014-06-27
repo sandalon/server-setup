@@ -12,21 +12,29 @@ func main() {
 	// command line args without the prog
 	args := os.Args[1:]
 
-	if len(args) != 2 {
-		fmt.Println("Usage: dataloader {keyspace} {source file}")
+	if len(args) != 3 {
+		fmt.Println("Usage: dataloader {keyspace} {entries file} {words2entries file}")
 		return
 	}
 
 	keyspace := args[0]
 	source := args[1]
+	words2source := args[2]
 
-	// check if the options file exists
+	// check if the source file exists
 	sourceFile, err := os.Open(source)
 	if err != nil {
 		fmt.Println("Error reading input file: " + source)
 		return
 	}
 	defer sourceFile.Close()
+
+	// check if the words2source file exists
+	words2SourceFile, err := os.Open(words2source)
+	if err != nil {
+		fmt.Println("Error reading: " + words2source)
+		return
+	}
 
 	dataloader.Initialize(keyspace)
 
@@ -43,7 +51,24 @@ func main() {
 		headword := strings.Replace(entries[1], "\"", "", -1)
 		content := entries[3]
 
-		dataloader.Process(headword, content)
+		dataloader.ProcessWord(headword, content)
+		line, e = Readln(reader)
+	}
+
+	reader = bufio.NewReader(words2SourceFile)
+	line, e = Readln(reader)
+	for e == nil {
+
+		entries := strings.Split(line, "\t")
+		if len(entries) != 4 {
+			fmt.Println("Bad line entry!")
+			continue
+		}
+
+		display := entries[2]
+		headword := entries[3]
+
+		dataloader.ProcessLookup(display, headword)
 		line, e = Readln(reader)
 	}
 
