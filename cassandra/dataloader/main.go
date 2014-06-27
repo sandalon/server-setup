@@ -40,7 +40,7 @@ func main() {
 			continue
 		}
 
-		headword := entries[1]
+		headword := strings.Replace(entries[1], "\"", "", -1)
 		content := entries[3]
 
 		dataloader.Process(headword, content)
