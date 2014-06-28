@@ -27,14 +27,14 @@ func ProcessWord(headword string, content string) {
 	fmt.Println("Processing " + headword)
 	if err := session.Query("INSERT INTO word (display, content) VALUES (?, ?)",
 		headword, content).Exec(); err != nil {
-		fmt.Println("Error!")
+		fmt.Println(err)
 		return
 	}
 }
 
 func ProcessLookup(display string, headword string) {
 	fmt.Println("Processing Display " + display)
-	if err := session.Query("INSERT INTO lookup (display, lookup) VALUES (?, ?)",
+	if err := session.Query("INSERT INTO lookup (wordformDisplay, headword) VALUES (?, ?)",
 		display, headword).Exec(); err != nil {
 		fmt.Println("Error!")
 		return

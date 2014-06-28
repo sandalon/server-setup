@@ -65,8 +65,8 @@ func main() {
 			continue
 		}
 
-		display := entries[2]
-		headword := entries[3]
+		display := entries[3]
+		headword := entries[2]
 
 		dataloader.ProcessLookup(display, headword)
 		line, e = Readln(reader)

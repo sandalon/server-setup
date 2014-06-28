@@ -10,3 +10,9 @@ CREATE TABLE word (
   content  VARCHAR,
   primary key (display)
 );
+
+CREATE TABLE lookup (
+  wordformDisplay VARCHAR,
+  headword VARCHAR,
+  primary key (wordformDisplay)
+);
