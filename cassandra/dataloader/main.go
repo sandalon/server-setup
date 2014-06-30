@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"strconv"
 )
 
 func main() {
@@ -71,6 +72,9 @@ func main() {
 		dataloader.ProcessLookup(display, headword)
 		line, e = Readln(reader)
 	}
+
+	fmt.Println("==========")
+	fmt.Println("Error Count: " + strconv.Itoa(dataloader.GetErrorCount()))
 
 	dataloader.CleanUp()
 }

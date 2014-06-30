@@ -6,13 +6,14 @@ CREATE KEYSPACE wordfinder WITH REPLICATION = {
 use wordfinder;
 
 CREATE TABLE word (
-  display  VARCHAR,
+  headword  VARCHAR,
   content  VARCHAR,
-  primary key (display)
+  primary key (headword)
 );
 
 CREATE TABLE lookup (
   wordformDisplay VARCHAR,
   headword VARCHAR,
+  content VARCHAR,
   primary key (wordformDisplay)
 );
