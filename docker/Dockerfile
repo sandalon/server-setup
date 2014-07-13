@@ -16,6 +16,7 @@ RUN gpg --export --armor 2B5C1B00 | apt-key add -
 RUN echo "deb http://www.apache.org/dist/cassandra/debian 20x main" | tee -a /etc/apt/sources.list.d/cassandra.list
 RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" >> /etc/apt/sources.list
 RUN add-apt-repository ppa:cwchien/gradle
+RUN add-apt-repository ppa:chris-lea/node.js
 
 # Update the repository
 RUN apt-get update
@@ -37,11 +38,12 @@ RUN apt-get install -y gradle
 RUN apt-get install -y golang
 
 # download and install nodejs and git
-RUN apt-get install -y nodejs npm git git-core
-RUN npm config set registry http://registry.npmjs.org/
-RUN npm install -g npm
-RUN ln -s /usr/bin/nodejs /usr/bin/node
-RUN npm install pm2
+RUN apt-get install -y nodejs
+RUN apt-get install -y git git-core
+#RUN npm config set registry http://registry.npmjs.org/
+#RUN npm install -g npm
+#RUN ln -s /usr/bin/nodejs /usr/bin/node
+RUN npm install pm2 -g
 
 # install cassandra
 VOLUME ["/var/lib/cassandra"]
@@ -63,25 +65,33 @@ RUN chmod 700 /root/.ssh/id_rsa
 #RUN ssh-add /root/.ssh/id_rsa
 RUN echo "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config
 #RUN ssh -v git@github.com
-RUN git clone git@github.com:sandalon/starlight.git /home/starlight
+
 RUN git clone git@github.com:sandalon/wordfinder.git /home/wordfinder
-
-ADD entries.txt .
-RUN mv entries.txt /home/starlight
-
-#RUN cassandra
-#RUN cqlsh -f create.cql
-#ADD run.sh .
-#RUN ./run.sh
+RUN git clone git@github.com:sandalon/starlight.git /home/starlight
 
 # Expose ports
-EXPOSE 80
+EXPOSE 3000
+EXPOSE 9160
+EXPOSE 9042
+
+#ADD data /var/lib/cassandra
+ADD cassandra.yaml /etc/cassandra/cassandra.yaml
+ADD words2entries.txt .
+RUN mv words2entries.txt /home/starlight/src/words2Entries.txt
+ADD run.sh .
+ENTRYPOINT ["./run.sh"]
+
+
+
 
 # Set the default command to execute
 # when creating a new container
+#WORKDIR /home/starlight
+#RUN gradle run
 
-WORKDIR /home/wordfinder
+
+#WORKDIR /home/wordfinder
+#RUN npm install
 
 #pm2 start app.js -i max
-
-ENTRYPOINT ["pm2", "start", "server.js", "-i", "max"]
+#ENTRYPOINT ["pm2", "start", "server.js", "-i", "max", "--no-daemon"]

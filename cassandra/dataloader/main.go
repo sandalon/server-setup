@@ -13,14 +13,15 @@ func main() {
 	// command line args without the prog
 	args := os.Args[1:]
 
-	if len(args) != 3 {
-		fmt.Println("Usage: dataloader {keyspace} {entries file} {words2entries file}")
+	if len(args) != 4 {
+		fmt.Println("Usage: dataloader {server} {keyspace} {entries file} {words2entries file}")
 		return
 	}
 
-	keyspace := args[0]
-	source := args[1]
-	words2source := args[2]
+	server := args[0]
+	keyspace := args[1]
+	source := args[2]
+	words2source := args[3]
 
 	// check if the source file exists
 	sourceFile, err := os.Open(source)
@@ -37,10 +38,12 @@ func main() {
 		return
 	}
 
-	dataloader.Initialize(keyspace)
+	dataloader.Initialize(server, keyspace)
 
 	reader := bufio.NewReader(sourceFile)
 	line, e := Readln(reader)
+	maxBatchSize := 100
+	currentBatchSize := 0
 	for e == nil {
 
 		entries := strings.Split(line, "\t")
@@ -49,11 +52,24 @@ func main() {
 			continue
 		}
 
+		currentBatchSize += 1
+
 		headword := strings.Replace(entries[1], "\"", "", -1)
 		content := entries[3]
 
 		dataloader.ProcessWord(headword, content)
+
+		if currentBatchSize == maxBatchSize {
+			dataloader.ProcessBatch()
+			currentBatchSize = 0
+		}
+
 		line, e = Readln(reader)
+	}
+
+	if (currentBatchSize > 0) {
+		dataloader.ProcessBatch()
+		currentBatchSize = 0
 	}
 
 	reader = bufio.NewReader(words2SourceFile)
@@ -72,6 +88,8 @@ func main() {
 		dataloader.ProcessLookup(display, headword)
 		line, e = Readln(reader)
 	}
+
+	dataloader.ProcessBatch()
 
 	fmt.Println("==========")
 	fmt.Println("Error Count: " + strconv.Itoa(dataloader.GetErrorCount()))

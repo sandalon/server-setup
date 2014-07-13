@@ -1,0 +1,17 @@
+INSTALLS
+1. Python
+2. Java8
+2. Golang
+3. Nodejs
+4. pm2
+5. Cassandra
+
+SETUP
+1.  Copy dataloader and setup files
+2.  Copy the API
+3.  Copy the node app
+
+RUN
+1.  Run the dataloader
+2.  Run the Java API
+3.  Run the node app (pm2)

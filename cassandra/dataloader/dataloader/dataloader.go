@@ -3,17 +3,20 @@ package dataloader
 import (
 	"fmt"
 	"github.com/gocql/gocql"
-	"time"
 )
 
 var session *gocql.Session
 var cluster *gocql.ClusterConfig
 var errorCount int
+var batch *gocql.Batch
+var batchSize int
 
-func Initialize(keyspace string) {
-	cluster = gocql.NewCluster("localhost")
+func Initialize(server string, keyspace string) {
+	cluster = gocql.NewCluster(server)
 	cluster.Keyspace = keyspace
 	errorCount = 0
+	batchSize = 0
+	batch = gocql.NewBatch(gocql.LoggedBatch)
 
 	var err error
 	session, err = cluster.CreateSession()
@@ -22,6 +25,14 @@ func Initialize(keyspace string) {
 		errorCount = errorCount + 1
 		return
 	}
+}
+
+func ProcessBatch() {
+	err := session.ExecuteBatch(batch)
+	if err != nil {
+		errorCount += 1
+	}
+	batch = gocql.NewBatch(gocql.LoggedBatch)
 }
 
 func CleanUp() {
@@ -34,16 +45,15 @@ func GetErrorCount() int {
 
 func ProcessWord(headword string, content string) {
 	fmt.Println("Processing " + headword)
-	if err := session.Query("INSERT INTO word (headword, content) VALUES (?, ?)",
-		headword, content).Exec(); err != nil {
-		errorCount = errorCount + 1
-		fmt.Println(err)
-		return
-	}
+	batch.Query("INSERT INTO word (headword, content) VALUES (?, ?)",
+		headword, content)
+
+	return
 }
 
 func ProcessLookup(display string, headword string) {
 	fmt.Println("Processing Display " + display)
+	batchSize += 1
 
 	var content string
 	if err := session.Query(`SELECT content FROM word WHERE headword = ? LIMIT 1`,
@@ -54,13 +64,11 @@ func ProcessLookup(display string, headword string) {
 				return
     }
 
-	time.Sleep(10 * time.Millisecond)
+	batch.Query("INSERT INTO lookup (wordformDisplay, headword, content) VALUES (?, ?, ?)",
+		display, headword, content)
 
-	if err := session.Query("INSERT INTO lookup (wordformDisplay, headword, content) VALUES (?, ?, ?)",
-		display, headword, content).Exec(); err != nil {
-		errorCount = errorCount + 1
-		fmt.Println("Error saving lookup data")
-		fmt.Println(err)
-		return
+	if(batchSize == 100) {
+		ProcessBatch()
 	}
+
 }
