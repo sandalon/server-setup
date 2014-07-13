@@ -31,6 +31,8 @@ func ProcessBatch() {
 	err := session.ExecuteBatch(batch)
 	if err != nil {
 		errorCount += 1
+		fmt.Println("error processing batch: ")
+		fmt.Println(err)
 	}
 	batch = gocql.NewBatch(gocql.LoggedBatch)
 }
