@@ -3,6 +3,7 @@ package dataloader
 import (
 	"fmt"
 	"github.com/gocql/gocql"
+	//"time"
 )
 
 var session *gocql.Session
@@ -16,25 +17,28 @@ func Initialize(server string, keyspace string) {
 	cluster.Keyspace = keyspace
 	errorCount = 0
 	batchSize = 0
-	batch = gocql.NewBatch(gocql.LoggedBatch)
 
 	var err error
 	session, err = cluster.CreateSession()
 	if err != nil {
 		fmt.Println("Error creating session")
 		errorCount = errorCount + 1
+		panic(err)
 		return
 	}
+
+	batch = gocql.NewBatch(gocql.LoggedBatch)
 }
 
 func ProcessBatch() {
-	err := session.ExecuteBatch(batch)
-	if err != nil {
-		errorCount += 1
-		fmt.Println("error processing batch: ")
-		fmt.Println(err)
-	}
-	batch = gocql.NewBatch(gocql.LoggedBatch)
+	//err := session.ExecuteBatch(batch)
+	//if err != nil {
+	//	errorCount += 1
+	//	fmt.Println("error processing batch: ")
+	//	fmt.Println(err)
+	//}
+	//batch = gocql.NewBatch(gocql.LoggedBatch)
+	//time.Sleep(10000)
 }
 
 func CleanUp() {
@@ -46,15 +50,18 @@ func GetErrorCount() int {
 }
 
 func ProcessWord(headword string, content string) {
-	fmt.Println("Processing " + headword)
+	//fmt.Println("Processing " + headword)
 	batch.Query("INSERT INTO word (headword, content) VALUES (?, ?)",
 		headword, content)
+
+	//fmt.Println("INSERT INTO word (headword, content) VALUES (" + headword + "," + content + ")")
+	//fmt.Printf("%s\t%s\n", headword, content)
 
 	return
 }
 
 func ProcessLookup(display string, headword string) {
-	fmt.Println("Processing Display " + display)
+	//fmt.Println("Processing Display " + display)
 	batchSize += 1
 
 	var content string
@@ -69,8 +76,11 @@ func ProcessLookup(display string, headword string) {
 	batch.Query("INSERT INTO lookup (wordformDisplay, headword, content) VALUES (?, ?, ?)",
 		display, headword, content)
 
+	fmt.Printf("%s\t%s\t%s\n", display, headword, content)
+
 	if(batchSize == 100) {
-		ProcessBatch()
+		//fmt.Println("Processing display batch")
+		//ProcessBatch()
 	}
 
 }

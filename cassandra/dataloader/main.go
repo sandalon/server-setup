@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"strconv"
+	//"strconv"
 )
 
 func main() {
@@ -42,7 +42,7 @@ func main() {
 
 	reader := bufio.NewReader(sourceFile)
 	line, e := Readln(reader)
-	maxBatchSize := 100
+	maxBatchSize := 50000
 	currentBatchSize := 0
 	for e == nil {
 
@@ -54,13 +54,13 @@ func main() {
 
 		currentBatchSize += 1
 
-		headword := strings.Replace(entries[1], "\"", "", -1)
-		content := entries[3]
+		//headword := strings.Replace(entries[1], "\"", "", -1)
+		//content := entries[3]
 
-		dataloader.ProcessWord(headword, content)
+		//dataloader.ProcessWord(headword, content)
 
 		if currentBatchSize == maxBatchSize {
-			dataloader.ProcessBatch()
+			//dataloader.ProcessBatch()
 			currentBatchSize = 0
 		}
 
@@ -68,7 +68,7 @@ func main() {
 	}
 
 	if (currentBatchSize > 0) {
-		dataloader.ProcessBatch()
+		//dataloader.ProcessBatch()
 		currentBatchSize = 0
 	}
 
@@ -89,10 +89,10 @@ func main() {
 		line, e = Readln(reader)
 	}
 
-	dataloader.ProcessBatch()
+	//dataloader.ProcessBatch()
 
-	fmt.Println("==========")
-	fmt.Println("Error Count: " + strconv.Itoa(dataloader.GetErrorCount()))
+	//fmt.Println("==========")
+	//fmt.Println("Error Count: " + strconv.Itoa(dataloader.GetErrorCount()))
 
 	dataloader.CleanUp()
 }

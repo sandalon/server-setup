@@ -12,5 +12,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "coreos-alpha"
   config.vm.synced_folder "../", "/tmp/project", create: true, id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
   config.vm.network :forwarded_port, :host => 49001, :guest => 49001
-
+  config.vm.network :forwarded_port, :host => 9160, :guest => 9160
+  config.vm.network :forwarded_port, :host => 9042, :guest => 9042
 end
