@@ -15,6 +15,12 @@ var batchSize int
 func Initialize(server string, keyspace string) {
 	cluster = gocql.NewCluster(server)
 	cluster.Keyspace = keyspace
+	cluster.Timeout = 60000000000 // 60 seconds in ns
+
+	var retry gocql.RetryPolicy
+	retry.NumRetries = 2
+	cluster.RetryPolicy = retry
+	cluster.NumConns = 1
 	errorCount = 0
 	batchSize = 0
 	batch = gocql.NewBatch(gocql.LoggedBatch)
@@ -48,7 +54,7 @@ func GetErrorCount() int {
 }
 
 func ProcessWord(headword string, content string) {
-	fmt.Println("Processing " + headword)
+	//fmt.Println("Processing " + headword)
 	batch.Query("INSERT INTO word (headword, content) VALUES (?, ?)",
 		headword, content)
 
@@ -56,7 +62,7 @@ func ProcessWord(headword string, content string) {
 }
 
 func ProcessLookup(display string, headword string) {
-	fmt.Println("Processing Display " + display)
+	//fmt.Println("Processing Display " + display)
 	batchSize += 1
 
 	var content string
@@ -71,7 +77,7 @@ func ProcessLookup(display string, headword string) {
 	batch.Query("INSERT INTO lookup (wordformDisplay, headword, content) VALUES (?, ?, ?)",
 		display, headword, content)
 
-	if(batchSize == 100) {
+	if(batchSize == 5000) {
 		ProcessBatch()
 	}
 

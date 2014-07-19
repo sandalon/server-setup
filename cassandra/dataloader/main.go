@@ -45,7 +45,7 @@ func main() {
 	if activity == "all" || activity == "word" {
 		reader := bufio.NewReader(sourceFile)
 		line, e := Readln(reader)
-		maxBatchSize := 100
+		maxBatchSize := 5000
 		currentBatchSize := 0
 		for e == nil {
 

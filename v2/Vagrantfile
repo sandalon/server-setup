@@ -10,8 +10,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box_url = "http://storage.core-os.net/coreos/amd64-usr/alpha/coreos_production_vagrant_vmware_fusion.box"
   config.vm.box = "coreos-alpha"
   config.vm.synced_folder "../", "/tmp/project", create: true, id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
-  config.vm.network :forwarded_port, :host => 8000, :guest => 8000
-  config.vm.network :forwarded_port, :host => 9160, :guest => 9160
-  config.vm.network :forwarded_port, :host => 9042, :guest => 9042
-  config.vm.network :forwarded_port, :host => 80, :guest => 80
+  config.vm.network :private_network, ip: "192.168.30.2"
+  #config.vm.network :forwarded_port, :host => 8000, :guest => 8000
+  #config.vm.network :forwarded_port, :host => 9160, :guest => 9160
+  #config.vm.network :forwarded_port, :host => 9042, :guest => 9042
+  #config.vm.network :forwarded_port, :host => 80, :guest => 80
 end

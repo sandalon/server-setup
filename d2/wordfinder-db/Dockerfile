@@ -22,7 +22,6 @@ RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true 
 RUN apt-get install -y oracle-java8-installer ca-certificates
 
 # install cassandra
-VOLUME ["/var/lib/cassandra"]
 RUN apt-get -y --force-yes install cassandra
 
 # add config files
