@@ -7,7 +7,6 @@ VAGRANTFILE_API_VERSION = "2"
 CLOUD_CONFIG_PATH = "./user-data"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-
   config.vm.box_url = "http://storage.core-os.net/coreos/amd64-usr/alpha/coreos_production_vagrant_vmware_fusion.box"
   config.vm.box = "coreos-alpha"
   config.vm.synced_folder "../", "/tmp/project", create: true, id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
