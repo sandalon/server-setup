@@ -61,23 +61,46 @@ func ProcessWord(headword string, content string) {
 	return
 }
 
+func ProcessTitle(display string, title string) {
+	batchSize += 1
+
+	batch.Query("UPDATE lookup set title = ? where wordformdisplay = ?",
+		title, display)
+
+	if batchSize == 5000 {
+		ProcessBatch()
+	}
+}
+
+func ProcessMeta(display string, description string, keywords string, copyright string) {
+	batchSize += 1
+
+	batch.Query("UPDATE lookup set meta = ? where wordformdisplay = ?",
+		description+keywords+copyright, display)
+
+	if batchSize == 5000 {
+		ProcessBatch()
+	}
+}
+
 func ProcessLookup(display string, headword string) {
-	//fmt.Println("Processing Display " + display)
+	fmt.Println("Processing Display " + headword)
 	batchSize += 1
 
 	var content string
 	if err := session.Query(`SELECT content FROM word WHERE headword = ? LIMIT 1`,
-        headword).Consistency(gocql.One).Scan(&content); err != nil {
-				errorCount = errorCount + 1
-        fmt.Println("Error fetching content for headword: " + headword)
-				fmt.Println(err)
-				return
-    }
+		headword).Consistency(gocql.One).Scan(&content); err != nil {
+		errorCount = errorCount + 1
+		fmt.Println("Error fetching content for headword: " + headword)
+		fmt.Println(err)
+		errorCount += 1
+		return
+	}
 
 	batch.Query("INSERT INTO lookup (wordformDisplay, headword, content) VALUES (?, ?, ?)",
 		display, headword, content)
 
-	if(batchSize == 5000) {
+	if batchSize == 5000 {
 		ProcessBatch()
 	}
 

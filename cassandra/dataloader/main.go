@@ -5,16 +5,16 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func main() {
 	// command line args without the prog
 	args := os.Args[1:]
 
-	if len(args) != 5 {
-		fmt.Println("Usage: dataloader {server} {keyspace} {entries file} {words2entries file} {all|word|lookup}")
+	if len(args) != 7 {
+		fmt.Println("Usage: dataloader {server} {keyspace} {entries file} {words2entries file} {words2title file} {words2meta file} {all|word|lookup|title|meta}")
 		return
 	}
 
@@ -22,7 +22,9 @@ func main() {
 	keyspace := args[1]
 	source := args[2]
 	words2source := args[3]
-	activity := args[4]
+	words2titleSource := args[4]
+	words2metaSource := args[5]
+	activity := args[6]
 
 	// check if the source file exists
 	sourceFile, err := os.Open(source)
@@ -39,10 +41,23 @@ func main() {
 		return
 	}
 
+	// check if the words2titleSource file exists
+	words2title, err := os.Open(words2titleSource)
+	if err != nil {
+		fmt.Println("Error reading: " + words2titleSource)
+		return
+	}
+
+	words2meta, err := os.Open(words2metaSource)
+	if err != nil {
+		fmt.Println("Error reading: " + words2metaSource)
+		return
+	}
+
 	dataloader.Initialize(server, keyspace)
 
-
 	if activity == "all" || activity == "word" {
+		fmt.Println("Starting Words...")
 		reader := bufio.NewReader(sourceFile)
 		line, e := Readln(reader)
 		maxBatchSize := 5000
@@ -70,13 +85,14 @@ func main() {
 			line, e = Readln(reader)
 		}
 
-		if (currentBatchSize > 0) {
+		if currentBatchSize > 0 {
 			dataloader.ProcessBatch()
 			currentBatchSize = 0
 		}
 	}
 
 	if activity == "all" || activity == "lookup" {
+		fmt.Println("Starting Lookups...")
 		reader := bufio.NewReader(words2SourceFile)
 		line, e := Readln(reader)
 		for e == nil {
@@ -88,9 +104,56 @@ func main() {
 			}
 
 			display := entries[3]
-			headword := entries[2]
+			//headword := entries[2]
+			headword := strings.Replace(entries[2], "\"", "", -1)
 
 			dataloader.ProcessLookup(display, headword)
+			line, e = Readln(reader)
+		}
+
+		dataloader.ProcessBatch()
+	}
+
+	if activity == "all" || activity == "title" {
+		fmt.Println("Starting Titles...")
+		reader := bufio.NewReader(words2title)
+		line, e := Readln(reader)
+		for e == nil {
+
+			entries := strings.Split(line, "\t")
+			if len(entries) != 2 {
+				fmt.Println("Bad line entry!")
+				continue
+			}
+
+			display := strings.Replace(entries[0], "\"", "", -1)
+			title := entries[1]
+
+			dataloader.ProcessTitle(display, title)
+			line, e = Readln(reader)
+		}
+
+		dataloader.ProcessBatch()
+	}
+
+	if activity == "all" || activity == "meta" {
+		fmt.Println("Starting Meta...")
+		reader := bufio.NewReader(words2meta)
+		line, e := Readln(reader)
+		for e == nil {
+
+			entries := strings.Split(line, "\t")
+			if len(entries) != 4 {
+				fmt.Println("Bad line entry!")
+				continue
+			}
+
+			display := strings.Replace(entries[0], "\"", "", -1)
+			description := entries[1]
+			keywords := entries[2]
+			copyright := entries[3]
+
+			dataloader.ProcessMeta(display, description, keywords, copyright)
 			line, e = Readln(reader)
 		}
 
