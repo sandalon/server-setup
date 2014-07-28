@@ -1,9 +1,12 @@
-FROM ubuntu:precise
+FROM ubuntu
 
 # File Author / Maintainer
 MAINTAINER Corey McClelland
 
+RUN apt-get update -y
+
 #install python
+RUN apt-get install -y software-properties-common
 RUN apt-get install -y python-software-properties
 
 RUN add-apt-repository ppa:webupd8team/java
