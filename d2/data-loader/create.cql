@@ -15,5 +15,7 @@ CREATE TABLE lookup (
   wordformDisplay VARCHAR,
   headword VARCHAR,
   content VARCHAR,
+  title VARCHAR,
+  meta VARCHAR,
   primary key (wordformDisplay)
 );

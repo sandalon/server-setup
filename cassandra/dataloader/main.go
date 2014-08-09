@@ -73,7 +73,7 @@ func main() {
 			currentBatchSize += 1
 
 			headword := strings.Replace(entries[1], "\"", "", -1)
-			content := entries[3]
+			content := strings.Replace(entries[3], "\"", "", -1)
 
 			dataloader.ProcessWord(headword, content)
 
@@ -103,7 +103,7 @@ func main() {
 				continue
 			}
 
-			display := entries[3]
+			display := strings.Replace(entries[3], "\"", "", -1)
 			//headword := entries[2]
 			headword := strings.Replace(entries[2], "\"", "", -1)
 
@@ -127,7 +127,7 @@ func main() {
 			}
 
 			display := strings.Replace(entries[0], "\"", "", -1)
-			title := entries[1]
+			title := strings.Replace(entries[1], "\"", "", -1)
 
 			dataloader.ProcessTitle(display, title)
 			line, e = Readln(reader)
@@ -149,9 +149,9 @@ func main() {
 			}
 
 			display := strings.Replace(entries[0], "\"", "", -1)
-			description := entries[1]
-			keywords := entries[2]
-			copyright := entries[3]
+			description := strings.Replace(entries[1], "\"", "", -1)
+			keywords := strings.Replace(entries[2], "\"", "", -1)
+			copyright := strings.Replace(entries[3], "\"", "", -1)
 
 			dataloader.ProcessMeta(display, description, keywords, copyright)
 			line, e = Readln(reader)

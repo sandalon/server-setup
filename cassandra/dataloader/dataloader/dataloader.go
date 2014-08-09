@@ -84,7 +84,7 @@ func ProcessMeta(display string, description string, keywords string, copyright 
 }
 
 func ProcessLookup(display string, headword string) {
-	fmt.Println("Processing Display " + headword)
+	//fmt.Println("Processing Display " + headword)
 	batchSize += 1
 
 	var content string
