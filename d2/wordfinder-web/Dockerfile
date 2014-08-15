@@ -32,4 +32,7 @@ RUN npm install
 # Expose ports
 EXPOSE 3000
 
+# environment variables
+ENV NODE_ENV production
+
 ENTRYPOINT ["pm2", "start", "server.js", "-i", "max", "--no-daemon"]
