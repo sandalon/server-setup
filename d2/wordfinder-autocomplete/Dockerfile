@@ -24,13 +24,11 @@ ADD wordfinder_rsa /root/.ssh/id_rsa
 RUN chmod 700 /root/.ssh/id_rsa
 RUN echo "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config
 
-ADD words2entries.txt .
-
 # clone the autocomplete service
 RUN git clone git@github.com:sandalon/starlight.git /home/starlight
 
 # add the lookup data
-
+ADD words2entries.txt .
 RUN mv words2entries.txt /home/starlight/src/words2Entries.txt
 
 EXPOSE 8000
