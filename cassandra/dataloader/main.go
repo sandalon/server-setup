@@ -63,11 +63,12 @@ func main() {
 		maxBatchSize := 5000
 		currentBatchSize := 0
 		for e == nil {
-
 			entries := strings.Split(line, "\t")
+			
 			if len(entries) != 4 {
 				fmt.Println("Bad line entry!")
-				continue
+				fmt.Println(len(entries))
+				return
 			}
 
 			currentBatchSize += 1
