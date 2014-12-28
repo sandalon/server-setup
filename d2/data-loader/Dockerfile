@@ -13,14 +13,19 @@ RUN pip install cqlsh
 #install git
 RUN apt-get install -y git git-core
 
+RUN apt-get install tar
+
 #install mercurial
 RUN apt-get install -y mercurial
+RUN apt-get install -y wget
 
 #install go
 RUN apt-get install -y python-software-properties
 RUN mkdir /go
 ENV GOPATH /go
-RUN apt-get install -y golang
+RUN wget -P /usr/local https://storage.googleapis.com/golang/go1.3.3.linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf /usr/local/go1.3.3.linux-amd64.tar.gz
+ENV PATH $PATH:/usr/local/go/bin
 RUN go get github.com/gocql/gocql
 
 # clone repo
@@ -43,3 +48,4 @@ ADD run.sh .
 RUN chmod +x run.sh
 
 ENTRYPOINT ["/run.sh"]
+#ENTRYPOINT ["/bin/bash"]
