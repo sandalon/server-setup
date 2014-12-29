@@ -6,9 +6,6 @@ MAINTAINER Corey McClelland <corey@wordfinder.io>
 
 RUN apt-get update
 
-# gradle
-RUN apt-get install -y gradle
-
 # git
 RUN apt-get install -y git git-core
 RUN mkdir -p /root/.ssh
